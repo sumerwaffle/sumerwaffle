@@ -1,0 +1,533 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Sümer Waffle Sipariş</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=Manrope:wght@400;500;600;700&family=Caveat:wght@500;600&display=swap">
+<style>
+/* Layout: tek sütun, menü kartındaki gibi noktalı çizgiyle ürün adı ... fiyat satırları; sabit sepet çubuğu altta */
+:root {
+  --ink: #0f0d0a;
+  --panel: #1a1612;
+  --panel-2: #241e17;
+  --line: #3b3226;
+  --gold: #e8b84a;
+  --gold-deep: #b98a26;
+  --cream: #f3e9d2;
+  --muted: #a99b82;
+  --on-gold: #1a1205;
+  --danger: #e8806e;
+  --ok: #86c98a;
+  --f-display: "Bricolage Grotesque", "Arial Black", Impact, sans-serif;
+  --f-body: "Manrope", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-script: "Caveat", "Segoe Script", cursive;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--ink);
+  color: var(--cream);
+  font-family: var(--f-body);
+  font-size: 15px;
+  line-height: 1.5;
+  padding-block: 0 120px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+body::before {
+  content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px);
+  z-index: 30; background: var(--ink);
+}
+.wrap { max-width: 720px; margin: 0 auto; }
+button { font: inherit; color: inherit; cursor: pointer; }
+:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+
+/* Başlık */
+.top { padding: 36px 0 20px; text-align: center; display: grid; gap: 6px; justify-items: center; }
+.slab {
+  display: inline-block; background: var(--gold); color: #0a0805;
+  font-family: var(--f-display); font-weight: 800; line-height: 1; letter-spacing: -0.02em;
+  clip-path: polygon(1% 12%, 6% 0, 40% 6%, 72% 0, 99% 8%, 100% 55%, 97% 100%, 62% 94%, 30% 100%, 3% 92%, 0 50%);
+}
+.slab.big { font-size: clamp(52px, 17vw, 96px); padding: 0.14em 0.5em 0.1em; transform: rotate(-2deg); }
+.slab.sm { font-size: 26px; padding: 0.12em 0.6em 0.08em; }
+.word {
+  font-family: var(--f-display); font-weight: 700; letter-spacing: 0.42em; margin-right: -0.42em;
+  font-size: clamp(22px, 7vw, 34px);
+}
+.script { font-family: var(--f-script); color: var(--gold); font-size: 24px; font-weight: 500; }
+.lead { color: var(--muted); max-width: 44ch; margin: 6px 0 0; text-wrap: balance; }
+
+/* Sekmeler */
+.tabs {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20;
+  background: var(--ink); border-bottom: 1px solid var(--line);
+  display: flex; gap: 8px; padding: 10px 0; overflow-x: auto;
+}
+.tabs button {
+  flex: 1 0 auto; background: transparent; border: 1px solid var(--line); border-radius: 999px;
+  padding: 8px 16px; font-weight: 600; font-size: 14px; color: var(--cream); white-space: nowrap;
+}
+.tabs button[aria-current="true"] { background: var(--gold); border-color: var(--gold); color: var(--on-gold); }
+
+section.menu { padding-top: 28px; scroll-margin-top: 64px; }
+section.menu > h2 { margin: 0 0 8px; }
+
+/* Ürün satırı */
+.item { border-bottom: 1px solid var(--line); padding: 14px 0; }
+.row-head { display: flex; align-items: baseline; gap: 10px; }
+.row-head .name { font-family: var(--f-display); font-weight: 700; font-size: 19px; letter-spacing: -0.01em; }
+.row-head .dots { flex: 1; min-width: 12px; border-bottom: 2px dotted var(--line); transform: translateY(-4px); }
+.row-head .price { font-family: var(--f-display); font-weight: 700; font-size: 19px; color: var(--gold); font-variant-numeric: tabular-nums; }
+.desc { margin: 4px 0 0; color: var(--muted); font-size: 13.5px; max-width: 60ch; }
+.item-actions { margin-top: 10px; display: flex; gap: 8px; }
+.ghost {
+  background: transparent; border: 1px solid var(--gold-deep); color: var(--gold);
+  border-radius: 8px; padding: 7px 14px; font-weight: 600; font-size: 13.5px;
+}
+.ghost[aria-expanded="true"] { background: var(--panel-2); }
+
+/* Özelleştirme paneli */
+.panel { margin-top: 12px; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 14px; display: grid; gap: 14px; }
+fieldset { border: 0; margin: 0; padding: 0; min-width: 0; }
+legend { padding: 0; margin-bottom: 8px; font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); font-weight: 700; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { position: relative; }
+.chip input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+.chip span {
+  display: inline-flex; align-items: center; gap: 6px; padding: 8px 12px; border-radius: 999px;
+  border: 1px solid var(--line); background: var(--panel-2); font-size: 14px; font-weight: 500; min-height: 38px;
+}
+.chip span::before { content: ""; width: 14px; height: 14px; border-radius: 4px; border: 1.5px solid var(--muted); flex: none; }
+.chip input:checked + span { border-color: var(--gold); background: #3a2d12; color: var(--cream); }
+.chip input:checked + span::before {
+  background: var(--gold) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14'%3E%3Cpath d='M3 7.4l2.6 2.6L11 4.6' fill='none' stroke='%231a1205' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/100% no-repeat;
+  border-color: var(--gold);
+}
+.fixed .chip input:not(:checked) + span { text-decoration: line-through; color: var(--muted); }
+.chip input:focus-visible + span { outline: 2px solid var(--gold); outline-offset: 2px; }
+.hint { margin: 0; color: var(--muted); font-size: 13px; }
+.err { margin: 0; color: var(--danger); font-size: 13.5px; font-weight: 600; }
+.add-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+
+.stepper { display: inline-flex; align-items: center; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: var(--panel-2); }
+.stepper button { width: 40px; height: 40px; background: transparent; border: 0; font-size: 20px; line-height: 1; }
+.stepper button:active { background: var(--line); }
+.stepper output { min-width: 32px; text-align: center; font-weight: 700; font-variant-numeric: tabular-nums; }
+.primary {
+  background: var(--gold); color: var(--on-gold); border: 0; border-radius: 10px; padding: 11px 18px;
+  font-weight: 700; flex: 1; min-width: 180px; min-height: 42px;
+}
+.primary:active { background: var(--gold-deep); }
+
+/* İçecek satırı */
+.drink { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--line); }
+.drink .name { font-weight: 600; }
+.drink .dots { flex: 1; min-width: 10px; border-bottom: 2px dotted var(--line); transform: translateY(2px); }
+.drink .price { color: var(--gold); font-weight: 700; font-variant-numeric: tabular-nums; margin-right: 4px; }
+.drink .stepper button { width: 36px; height: 36px; }
+
+/* Sepet */
+#sepet { padding-top: 36px; scroll-margin-top: 16px; }
+.cart-empty { color: var(--muted); border: 1px dashed var(--line); border-radius: 12px; padding: 18px; margin: 12px 0 0; }
+.line { padding: 12px 0; border-bottom: 1px solid var(--line); display: grid; gap: 4px; }
+.line-top { display: flex; gap: 10px; align-items: baseline; justify-content: space-between; }
+.line-top .ln { font-weight: 700; }
+.line-top .lp { color: var(--gold); font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.line .sum { margin: 0; color: var(--muted); font-size: 13.5px; }
+.line-tools { display: flex; align-items: center; gap: 12px; margin-top: 4px; }
+.line .stepper button { width: 36px; height: 36px; }
+.linkish { background: none; border: 0; color: var(--danger); font-size: 13.5px; text-decoration: underline; padding: 6px 0; }
+.total { display: flex; justify-content: space-between; align-items: baseline; padding: 14px 0; font-family: var(--f-display); font-weight: 800; font-size: 24px; }
+.total b { color: var(--gold); font-variant-numeric: tabular-nums; }
+
+form { display: grid; gap: 16px; margin-top: 8px; }
+.field { display: grid; gap: 6px; min-width: 0; }
+.field > label, .field > .lab { font-size: 13px; font-weight: 700; color: var(--cream); }
+input[type="text"], textarea {
+  width: 100%; background: var(--panel); color: var(--cream); border: 1px solid var(--line); border-radius: 10px;
+  padding: 11px 12px; font: inherit; min-height: 44px;
+}
+textarea { resize: vertical; min-height: 76px; }
+input[type="text"]::placeholder, textarea::placeholder { color: #7d705b; }
+.seg { display: flex; gap: 8px; flex-wrap: wrap; }
+.seg label { position: relative; flex: 1 1 140px; }
+.seg input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+.seg span { display: block; text-align: center; padding: 11px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--panel); font-weight: 600; }
+.seg input:checked + span { border-color: var(--gold); background: #3a2d12; color: var(--gold); }
+.seg input:focus-visible + span { outline: 2px solid var(--gold); outline-offset: 2px; }
+
+.send {
+  display: flex; align-items: center; justify-content: center; gap: 10px; text-align: center;
+  background: #25d366; color: #06210f; text-decoration: none; font-weight: 800; font-size: 16px;
+  border-radius: 12px; padding: 14px 18px; min-height: 52px;
+}
+.send[aria-disabled="true"] { background: var(--panel-2); color: var(--muted); border: 1px solid var(--line); }
+.send svg { width: 22px; height: 22px; flex: none; }
+.send-msg { margin: 0; font-size: 13.5px; color: var(--muted); min-height: 1.4em; }
+.send-msg.warn { color: var(--danger); font-weight: 700; }
+.copy { justify-self: start; }
+.fine { color: var(--muted); font-size: 12.5px; margin: 20px 0 0; }
+
+/* Sabit sepet çubuğu */
+.bar {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 25;
+  padding: 10px max(16px, env(safe-area-inset-right, 0px)) calc(10px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px));
+  background: linear-gradient(to top, var(--ink) 70%, rgba(15,13,10,0));
+}
+.bar button {
+  display: flex; width: 100%; max-width: 720px; margin: 0 auto; align-items: center; justify-content: space-between; gap: 12px;
+  background: var(--gold); color: var(--on-gold); border: 0; border-radius: 14px; padding: 13px 18px; font-weight: 800; min-height: 52px;
+  box-shadow: 0 6px 24px rgba(0,0,0,0.5);
+}
+.bar .tot { font-variant-numeric: tabular-nums; }
+.toast {
+  position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(86px + env(safe-area-inset-bottom, 0px));
+  background: var(--cream); color: var(--on-gold); font-weight: 700; padding: 10px 16px; border-radius: 999px; z-index: 40;
+  max-width: calc(100% - 32px); text-align: center;
+}
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <span class="slab big">SÜMER</span>
+    <span class="word">WAFFLE</span>
+    <span class="script">Tatlıya en güzel hali…</span>
+    <p class="lead">Ürünü seç, malzemeleri işaretle, siparişin WhatsApp mesajı olarak hazır gelsin.</p>
+  </header>
+
+  <nav class="tabs" aria-label="Menü bölümleri">
+    <button type="button" data-go="waffle" aria-current="true">Waffle</button>
+    <button type="button" data-go="cups">Cups</button>
+    <button type="button" data-go="icecek">Soğuk İçecekler</button>
+    <button type="button" data-go="sepet">Sepetim</button>
+  </nav>
+
+  <section class="menu" id="waffle"><h2><span class="slab sm">WAFFLE</span></h2><div id="list-waffle"></div></section>
+  <section class="menu" id="cups"><h2><span class="slab sm">CUPS</span></h2><div id="list-cups"></div></section>
+  <section class="menu" id="icecek"><h2><span class="slab sm">SOĞUK İÇECEKLER</span></h2><div id="list-icecek"></div></section>
+
+  <section id="sepet" aria-labelledby="sepet-h">
+    <h2 id="sepet-h"><span class="slab sm">SEPETİM</span></h2>
+    <div id="cart"></div>
+
+    <form id="order-form" autocomplete="on" novalidate>
+      <div class="field">
+        <label for="f-name">Adınız</label>
+        <input type="text" id="f-name" name="name" autocomplete="name" placeholder="Ad Soyad">
+      </div>
+      <div class="field" id="addr-field">
+        <label for="f-addr">Teslim adresi</label>
+        <textarea id="f-addr" name="address" autocomplete="street-address" placeholder="Mahalle, sokak, bina ve daire no, tarif"></textarea>
+      </div>
+      <div class="field">
+        <label for="f-note">Sipariş notu (isteğe bağlı)</label>
+        <textarea id="f-note" name="note" placeholder="Örn. fıstık alerjim var, sosları ayrı koyun"></textarea>
+      </div>
+
+      <a id="send" class="send" href="#sepet" target="_blank" rel="noopener" aria-disabled="true">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38a9.9 9.9 0 0 0 4.74 1.21c5.46 0 9.91-4.45 9.91-9.91S17.5 2 12.04 2Zm0 18.15c-1.48 0-2.93-.4-4.2-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.2 8.2 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.25-8.24s8.24 3.7 8.24 8.24-3.7 8.24-8.24 8.24Zm4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.12-.17.25-.64.81-.78.97-.14.17-.29.19-.54.06-.25-.12-1.05-.39-2-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.02-.38.11-.5.11-.11.25-.29.37-.43.12-.14.17-.25.25-.41.08-.17.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.43h-.48c-.17 0-.43.06-.66.31-.22.25-.86.85-.86 2.07 0 1.22.89 2.4 1.01 2.56.12.17 1.75 2.67 4.23 3.74.59.26 1.05.41 1.41.52.59.19 1.13.16 1.56.1.48-.07 1.47-.6 1.67-1.18.21-.58.21-1.07.14-1.18-.06-.1-.22-.16-.47-.28Z"/></svg>
+        <span>WhatsApp ile siparişi gönder</span>
+      </a>
+      <p class="send-msg" id="send-msg" role="status"></p>
+      <button type="button" class="ghost copy" id="copy" hidden>Sipariş mesajını kopyala</button>
+    </form>
+    <p class="fine">Düğme WhatsApp'ı açar ve mesajı hazır yazar. Siparişiniz, WhatsApp'ta mesajın yanındaki gönder okuna bastığınızda bize ulaşır.</p>
+    <p class="fine">WhatsApp açılmazsa: "Sipariş mesajını kopyala" düğmesine basın, mesajı WhatsApp'ta <b>0535 512 31 84</b> numarasına yapıştırıp gönderin.</p>
+  </section>
+</div>
+
+<div class="bar" id="bar" hidden>
+  <button type="button" id="bar-btn"><span id="bar-count">Sepet</span><span class="tot" id="bar-total"></span></button>
+</div>
+<div class="toast" id="toast" role="status" hidden></div>
+
+<script>
+/* ---- İşletmenin düzenleyeceği tek ayar ----
+   WhatsApp numarası: ülke koduyla, boşluksuz, + işaretsiz. Örn. 905321234567
+   Boş / geçersizse WhatsApp mesajı hazır açılır, alıcıyı müşteri seçer. */
+var WHATSAPP_NUMBER = "905355123184";
+
+var ING = {
+  nutella: "Nutella", muz: "Muz", cilek: "Çilek", lotusB: "Lotus Bisküvi", lotusT: "Lotus Topping",
+  oreoT: "Oreo Tozu", oreoB: "Oreo Bisküvi", patlak: "Çikolata Patlakları", vermi: "Renkli Vermicelli",
+  hindi: "Hindistan Cevizi", fistik: "Yer Fıstığı Parçacıkları", ceviz: "Ceviz Parçacıkları", cakil: "Çakıl Taşı",
+  marsh: "Marshmallow", nesquik: "Nesquik Topları", rulokat: "Rulokat", bonibon: "Bonibon", waffleP: "Waffle Parçacıkları",
+  karamel: "Karamel Sos", sutlu: "Sütlü Sos", beyaz: "Beyaz Sos", antep: "Antep Sos"
+};
+var SAUCES = ["karamel", "sutlu", "beyaz", "antep"];
+var FREE_POOL = ["nutella","muz","cilek","lotusB","lotusT","oreoT","oreoB","patlak","vermi","hindi","fistik","ceviz","cakil","marsh","nesquik","rulokat","bonibon","karamel","sutlu","beyaz","antep"];
+
+var SUMER_BASE = ["nutella","muz","cilek","marsh","oreoT","nesquik","rulokat","vermi","bonibon","cakil","sutlu","beyaz","antep"];
+
+var ITEMS = [
+  { id: "senin", cat: "waffle", name: "Senin Wafflel'ın", price: 350, desc: "Seçeceğin malzemelerle hazırlanır. Aşağıdan istediklerini işaretle.", custom: true, pool: FREE_POOL, base: [] },
+  { id: "lotus", cat: "waffle", name: "Lotus Waffle", price: 375, base: ["nutella","muz","cilek","lotusB","lotusT","karamel"] },
+  { id: "oreo", cat: "waffle", name: "Oreo Waffle", price: 350, base: ["nutella","muz","cilek","oreoT","oreoB","beyaz","sutlu"] },
+  { id: "klasik", cat: "waffle", name: "Klasik Waffle", price: 350, base: ["nutella","muz","cilek","patlak","vermi","hindi","sutlu"] },
+  { id: "salata", cat: "waffle", name: "Waffle Salatası", price: 300, base: ["waffleP","nutella","fistik","ceviz","sutlu"] },
+  { id: "nutellaw", cat: "waffle", name: "Nutella Waffle", price: 325, base: ["nutella","muz","cilek","patlak","cakil","fistik","sutlu","beyaz"] },
+  { id: "sumer", cat: "waffle", name: "Sümer Waffle", price: 450, base: SUMER_BASE },
+  { id: "cift", cat: "waffle", name: "Sümer Çift Katlı Waffle", price: 550, base: SUMER_BASE },
+  { id: "oreocup", cat: "cups", name: "Oreo Cup", price: 250, base: ["waffleP","nutella","muz","cilek","oreoT","oreoB","beyaz","sutlu"] },
+  { id: "wafflecup", cat: "cups", name: "Waffle Cup", price: 250, base: ["waffleP","muz","cilek","beyaz","sutlu","vermi"] },
+  { id: "sumercup", cat: "cups", name: "Sümer Cup", price: 350, base: ["waffleP","muz","cilek","beyaz","sutlu","antep","rulokat","fistik"] }
+];
+var DRINKS = [
+  ["cola","Coca Cola",100],["fanta","Fanta",100],["sprite","Sprite",100],
+  ["fkarpuz","Fuse Tea Karpuz",100],["fseftali","Fuse Tea Şeftali",100],["flimon","Fuse Tea Limon",100],["fmango","Fuse Tea Mango",100],
+  ["cvisne","Cappy Vişne",75],["cportakal","Cappy Portakal",75],["cseftali","Cappy Şeftali",75],
+  ["soda","Sade Soda",30],["msoda","Meyveli Soda Karpuz-Çilek",45],["su","Su",25]
+];
+
+function tl(n) { return n.toLocaleString("tr-TR") + " ₺"; }
+function names(ids) { return ids.map(function (k) { return ING[k]; }).join(", "); }
+function $(s, r) { return (r || document).querySelector(s); }
+function $$(s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); }
+
+var cart = []; /* {key,kind,id,name,unit,qty,selected,removed,custom} */
+
+/* ---- Menü çizimi ---- */
+function chipHTML(id, k, checked) {
+  return '<label class="chip"><input type="checkbox" value="' + k + '"' + (checked ? " checked" : "") + "><span>" + ING[k] + "</span></label>";
+}
+function itemHTML(it) {
+  var pool = it.custom ? it.pool : it.base;
+  var mats = pool.filter(function (k) { return SAUCES.indexOf(k) < 0; });
+  var sauces = pool.filter(function (k) { return SAUCES.indexOf(k) >= 0; });
+  var desc = it.custom ? it.desc : names(it.base) + ".";
+  var def = function (k) { return !it.custom; };
+  var h = '<article class="item" data-item="' + it.id + '">';
+  h += '<div class="row-head"><span class="name">' + it.name + '</span><span class="dots"></span><span class="price">' + tl(it.price) + "</span></div>";
+  h += '<p class="desc">' + desc + "</p>";
+  h += '<div class="item-actions"><button type="button" class="ghost" data-toggle aria-expanded="false" aria-controls="p-' + it.id + '">' + (it.custom ? "Malzemeleri seç" : "Malzemeleri düzenle") + "</button></div>";
+  h += '<div class="panel' + (it.custom ? "" : " fixed") + '" id="p-' + it.id + '" hidden>';
+  h += '<fieldset><legend>Malzemeler</legend><div class="chips">' + mats.map(function (k) { return chipHTML(it.id, k, def(k)); }).join("") + "</div></fieldset>";
+  h += '<fieldset><legend>Soslar</legend><div class="chips">' + sauces.map(function (k) { return chipHTML(it.id, k, def(k)); }).join("") + "</div></fieldset>";
+  h += '<p class="hint">' + (it.custom ? "İstediğin kadar malzeme işaretle." : "İstemediğin malzemenin işaretini kaldır, siparişe \"çıkarılsın\" olarak yazılır.") + "</p>";
+  h += '<p class="err" data-err hidden></p>';
+  h += '<div class="add-row"><div class="stepper"><button type="button" data-q="-1" aria-label="Adedi azalt">−</button><output data-qty>1</output><button type="button" data-q="1" aria-label="Adedi artır">+</button></div>';
+  h += '<button type="button" class="primary" data-add>Sepete ekle · ' + tl(it.price) + "</button></div>";
+  h += "</div></article>";
+  return h;
+}
+function drinkHTML(d) {
+  return '<div class="drink" data-drink="' + d[0] + '"><span class="name">' + d[1] + '</span><span class="dots"></span><span class="price">' + tl(d[2]) + '</span>' +
+    '<div class="stepper"><button type="button" data-dq="-1" aria-label="' + d[1] + ' azalt">−</button><output data-dqty>0</output><button type="button" data-dq="1" aria-label="' + d[1] + ' ekle">+</button></div></div>';
+}
+function renderMenu() {
+  ["waffle", "cups"].forEach(function (c) {
+    $("#list-" + c).innerHTML = ITEMS.filter(function (i) { return i.cat === c; }).map(itemHTML).join("");
+  });
+  $("#list-icecek").innerHTML = DRINKS.map(drinkHTML).join("");
+}
+
+/* ---- Sepet ---- */
+function findItem(id) { return ITEMS.filter(function (i) { return i.id === id; })[0]; }
+function total() { return cart.reduce(function (s, l) { return s + l.unit * l.qty; }, 0); }
+function count() { return cart.reduce(function (s, l) { return s + l.qty; }, 0); }
+
+function lineSummary(l) {
+  if (l.kind === "drink") return "";
+  if (l.custom) return "Malzemeler: " + names(l.selected);
+  return l.removed.length ? "Çıkarılan: " + names(l.removed) : "Menüdeki gibi";
+}
+function renderCart() {
+  var box = $("#cart");
+  if (!cart.length) {
+    box.innerHTML = '<p class="cart-empty">Sepetin boş. Yukarıdan bir waffle, cup ya da içecek seç.</p>';
+  } else {
+    box.innerHTML = cart.map(function (l, i) {
+      var s = lineSummary(l);
+      return '<div class="line"><div class="line-top"><span class="ln">' + l.name + '</span><span class="lp">' + tl(l.unit * l.qty) + "</span></div>" +
+        (s ? '<p class="sum">' + s + "</p>" : "") +
+        '<div class="line-tools"><div class="stepper"><button type="button" data-lq="-1" data-i="' + i + '" aria-label="Azalt">−</button><output>' + l.qty + '</output><button type="button" data-lq="1" data-i="' + i + '" aria-label="Artır">+</button></div>' +
+        '<button type="button" class="linkish" data-rm="' + i + '">Kaldır</button></div></div>';
+    }).join("") + '<div class="total"><span>Toplam</span><b>' + tl(total()) + "</b></div>";
+  }
+  /* içecek adetlerini menüyle eşle */
+  $$(".drink").forEach(function (row) {
+    var l = cart.filter(function (x) { return x.kind === "drink" && x.id === row.getAttribute("data-drink"); })[0];
+    $("[data-dqty]", row).textContent = l ? l.qty : 0;
+  });
+  var bar = $("#bar");
+  bar.hidden = !cart.length;
+  $("#bar-count").textContent = "Sepetim · " + count() + " ürün";
+  $("#bar-total").textContent = tl(total());
+  updateSend();
+}
+
+function addLine(line) {
+  var ex = cart.filter(function (x) { return x.key === line.key; })[0];
+  if (ex) ex.qty += line.qty; else cart.push(line);
+  renderCart();
+}
+var toastTimer;
+function toast(t) {
+  var el = $("#toast"); el.textContent = t; el.hidden = false;
+  clearTimeout(toastTimer); toastTimer = setTimeout(function () { el.hidden = true; }, 1800);
+}
+
+/* ---- WhatsApp mesajı ---- */
+function buildMessage() {
+  var m = "Merhaba, Sümer Waffle'dan sipariş vermek istiyorum.\n\n*Siparişim*\n";
+  cart.forEach(function (l) {
+    m += l.qty + "x " + l.name + " — " + tl(l.unit * l.qty) + "\n";
+    var s = lineSummary(l);
+    if (s) m += "   " + s + "\n";
+  });
+  m += "\n*Toplam: " + tl(total()) + "*\n\n";
+  var name = $("#f-name").value.trim();
+  m += "*Ad:* " + name + "\n";
+  m += "*Adres:* " + $("#f-addr").value.trim() + "\n";
+  var note = $("#f-note").value.trim();
+  if (note) m += "*Not:* " + note + "\n";
+  return m;
+}
+function missing() {
+  var out = [];
+  if (!cart.length) out.push("sepete ürün ekle");
+  if (!$("#f-name").value.trim()) out.push("adını yaz");
+  if (!$("#f-addr").value.trim()) out.push("adresi yaz");
+  return out;
+}
+function waURL(text) {
+  var n = String(WHATSAPP_NUMBER).replace(/\D/g, "");
+  var valid = /^\d{10,15}$/.test(n);
+  return "https://wa.me/" + (valid ? n : "") + "?text=" + encodeURIComponent(text);
+}
+function updateSend() {
+  var a = $("#send"), miss = missing(), ok = !miss.length;
+  a.setAttribute("aria-disabled", ok ? "false" : "true");
+  a.href = ok ? waURL(buildMessage()) : "#sepet";
+  $("#send-msg").classList.remove("warn");
+  $("#send-msg").textContent = ok ? "Hazır. Düğmeye basınca WhatsApp açılır." : "Göndermek için: " + miss.join(", ") + ".";
+  $("#copy").hidden = !ok;
+}
+
+/* ---- Olaylar ---- */
+document.addEventListener("click", function (e) {
+  var t = e.target.closest("button, a");
+  if (!t) return;
+
+  if (t.hasAttribute("data-go")) {
+    var el = document.getElementById(t.getAttribute("data-go"));
+    if (el) el.scrollIntoView();
+    return;
+  }
+  if (t.id === "bar-btn") { $("#sepet").scrollIntoView(); return; }
+
+  var art = t.closest(".item");
+  if (art) {
+    var it = findItem(art.getAttribute("data-item")), panel = $(".panel", art);
+    if (t.hasAttribute("data-toggle")) {
+      var open = panel.hidden;
+      panel.hidden = !open;
+      t.setAttribute("aria-expanded", open ? "true" : "false");
+      return;
+    }
+    if (t.hasAttribute("data-q")) {
+      var out = $("[data-qty]", panel), q = Math.max(1, Math.min(20, +out.textContent + +t.getAttribute("data-q")));
+      out.textContent = q;
+      $("[data-add]", panel).textContent = "Sepete ekle · " + tl(it.price * q);
+      return;
+    }
+    if (t.hasAttribute("data-add")) {
+      var sel = $$("input:checked", panel).map(function (i) { return i.value; });
+      var err = $("[data-err]", panel);
+      if (it.custom && !sel.length) { err.textContent = "En az bir malzeme işaretle."; err.hidden = false; return; }
+      err.hidden = true;
+      var qty = +$("[data-qty]", panel).textContent;
+      var removed = it.custom ? [] : it.base.filter(function (k) { return sel.indexOf(k) < 0; });
+      var key = "w|" + it.id + "|" + sel.slice().sort().join(",");
+      addLine({ key: key, kind: "item", id: it.id, name: it.name, unit: it.price, qty: qty, selected: sel, removed: removed, custom: !!it.custom });
+      toast(it.name + " sepete eklendi");
+      /* paneli başlangıca döndür */
+      $$("input", panel).forEach(function (i) { i.checked = !it.custom; });
+      $("[data-qty]", panel).textContent = "1";
+      $("[data-add]", panel).textContent = "Sepete ekle · " + tl(it.price);
+      panel.hidden = true;
+      $("[data-toggle]", art).setAttribute("aria-expanded", "false");
+      return;
+    }
+  }
+
+  var drink = t.closest(".drink");
+  if (drink && t.hasAttribute("data-dq")) {
+    var d = DRINKS.filter(function (x) { return x[0] === drink.getAttribute("data-drink"); })[0];
+    var delta = +t.getAttribute("data-dq");
+    var ex = cart.filter(function (x) { return x.kind === "drink" && x.id === d[0]; })[0];
+    if (ex) {
+      ex.qty += delta;
+      if (ex.qty <= 0) cart.splice(cart.indexOf(ex), 1);
+      renderCart();
+    } else if (delta > 0) {
+      addLine({ key: "d|" + d[0], kind: "drink", id: d[0], name: d[1], unit: d[2], qty: 1, selected: [], removed: [], custom: false });
+    }
+    return;
+  }
+
+  if (t.hasAttribute("data-lq")) {
+    var l = cart[+t.getAttribute("data-i")];
+    l.qty += +t.getAttribute("data-lq");
+    if (l.qty <= 0) cart.splice(cart.indexOf(l), 1);
+    renderCart();
+    return;
+  }
+  if (t.hasAttribute("data-rm")) { cart.splice(+t.getAttribute("data-rm"), 1); renderCart(); return; }
+
+  if (t.id === "send") {
+    if (t.getAttribute("aria-disabled") === "true") {
+      e.preventDefault();
+      updateSend();
+      $("#send-msg").classList.add("warn");
+      if (!cart.length) document.getElementById("waffle").scrollIntoView();
+      else if (!$("#f-name").value.trim()) $("#f-name").focus();
+      else $("#f-addr").focus();
+      return;
+    }
+    setTimeout(function () {
+      if (document.visibilityState === "visible") {
+        $("#send-msg").textContent = "WhatsApp açılmadıysa aşağıdaki \"Sipariş mesajını kopyala\" düğmesini kullanın.";
+      }
+    }, 1500);
+    return;
+  }
+
+  if (t.id === "copy") {
+    var text = buildMessage();
+    var done = function () { toast("Mesaj kopyalandı"); };
+    var fallback = function () {
+      var ta = document.createElement("textarea"); ta.value = text; document.body.appendChild(ta); ta.select();
+      try { document.execCommand("copy"); done(); } catch (x) { toast("Kopyalanamadı, mesajı elle seçin"); }
+      document.body.removeChild(ta);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, fallback); else fallback();
+  }
+});
+
+document.addEventListener("input", function (e) {
+  if (e.target.closest("#order-form")) updateSend();
+});
+$("#order-form").addEventListener("submit", function (e) { e.preventDefault(); });
+
+/* Aktif sekme */
+var secs = ["waffle", "cups", "icecek", "sepet"];
+function markTab() {
+  var cur = secs[0];
+  secs.forEach(function (id) {
+    var el = document.getElementById(id);
+    if (el && el.getBoundingClientRect().top < 120) cur = id;
+  });
+  $$(".tabs button").forEach(function (b) { b.setAttribute("aria-current", b.getAttribute("data-go") === cur ? "true" : "false"); });
+}
+window.addEventListener("scroll", markTab, { passive: true });
+
+renderMenu();
+renderCart();
+markTab();
+</script>
+
+</body></html>
