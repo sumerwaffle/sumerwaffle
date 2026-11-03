@@ -276,7 +276,7 @@ var ING = {
   o_beyaz: "Beyaz", o_sutlu: "Sütlü", o_karamel: "Karamel", o_antep: "Antep", o_cilek: "Çilek", o_framb: "Frambuaz", o_bitter: "Bitter", o_bubble: "Bubble Gum"
 };
 
-/* "Senin Wafflel'ın" seçim grupları. max = en fazla seçim, extra = ek ücret (₺). Sınırı ya da ek ücreti buradan değiştirebilirsiniz. */
+/* "Senin Waffle'ın" seçim grupları. max = en fazla seçim, extra = ek ücret (₺). Sınırı ya da ek ücreti buradan değiştirebilirsiniz. */
 function G(id, title, max, keys) {
   return { id: id, title: title, type: "multi", max: max, items: keys.map(function (k) { return { k: k, extra: 0 }; }) };
 }
@@ -292,7 +292,7 @@ var SUMER_BASE = ["nutella","muz","cilek","marsh","oreoBT","nesquik","rulokat","
 
 /* Hazır ürünler: base = menüdeki malzemeler (müşteri istemediğini çıkarabilir) */
 var ITEMS = [
-  { id: "senin", cat: "waffle", name: "Senin Wafflel'ın", price: 350, desc: "Seçeceğin malzemelerle hazırlanır. Aşağıdan istediklerini işaretle.", custom: true, groups: SENIN_GROUPS },
+  { id: "senin", cat: "waffle", name: "Senin Waffle'ın", price: 350, desc: "Seçeceğin malzemelerle hazırlanır. Aşağıdan istediklerini işaretle.", custom: true, groups: SENIN_GROUPS },
   { id: "lotus", cat: "waffle", name: "Lotus Waffle", price: 350, base: ["nutella","muz","cilek","lotusB","lotusK","karamel"] },
   { id: "klasik", cat: "waffle", name: "Klasik Waffle", price: 250, base: ["nutella","muz","cilek","patlak","vermi","hindi","sutlu"] },
   { id: "oreo", cat: "waffle", name: "Oreo Waffle", price: 300, base: ["nutella","muz","cilek","oreoT","oreoB","sutluCik"] },
