@@ -105,6 +105,12 @@ legend { padding: 0; margin-bottom: 8px; font-size: 12px; letter-spacing: 0.12em
   background: var(--gold) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14'%3E%3Cpath d='M3 7.4l2.6 2.6L11 4.6' fill='none' stroke='%231a1205' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/100% no-repeat;
   border-color: var(--gold);
 }
+.chip input[type="radio"] + span::before { border-radius: 50%; }
+.chip em { font-style: normal; color: var(--gold); font-weight: 700; font-size: 13px; }
+.chip input:disabled { cursor: not-allowed; }
+.chip input:disabled + span { opacity: 0.38; }
+legend b { color: var(--gold); font-variant-numeric: tabular-nums; margin-left: 4px; }
+fieldset.full legend b { color: var(--ok); }
 .fixed .chip input:not(:checked) + span { text-decoration: line-through; color: var(--muted); }
 .chip input:focus-visible + span { outline: 2px solid var(--gold); outline-offset: 2px; }
 .hint { margin: 0; color: var(--muted); font-size: 13px; }
@@ -194,18 +200,20 @@ input[type="text"]::placeholder, textarea::placeholder { color: #7d705b; }
   <header class="top">
     <span class="slab big">SÜMER</span>
     <span class="word">WAFFLE</span>
-    <span class="script">Tatlının en güzel hali…</span>
+    <span class="script">Tatlıya en güzel hali…</span>
     <p class="lead">Ürünü seç, malzemeleri işaretle, siparişin WhatsApp mesajı olarak hazır gelsin.</p>
   </header>
 
   <nav class="tabs" aria-label="Menü bölümleri">
     <button type="button" data-go="waffle" aria-current="true">Waffle</button>
+    <button type="button" data-go="kova">Kova Waffle</button>
     <button type="button" data-go="cups">Cups</button>
     <button type="button" data-go="icecek">Soğuk İçecekler</button>
     <button type="button" data-go="sepet">Sepetim</button>
   </nav>
 
   <section class="menu" id="waffle"><h2><span class="slab sm">WAFFLE</span></h2><div id="list-waffle"></div></section>
+  <section class="menu" id="kova"><h2><span class="slab sm">KOVA WAFFLE</span></h2><div id="list-kova"></div></section>
   <section class="menu" id="cups"><h2><span class="slab sm">CUPS</span></h2><div id="list-cups"></div></section>
   <section class="menu" id="icecek"><h2><span class="slab sm">SOĞUK İÇECEKLER</span></h2><div id="list-icecek"></div></section>
 
@@ -251,35 +259,62 @@ input[type="text"]::placeholder, textarea::placeholder { color: #7d705b; }
 var WHATSAPP_NUMBER = "905355123184";
 
 var ING = {
-  nutella: "Nutella", muz: "Muz", cilek: "Çilek", lotusB: "Lotus Bisküvi", lotusT: "Lotus Topping",
-  oreoT: "Oreo Tozu", oreoB: "Oreo Bisküvi", patlak: "Çikolata Patlakları", vermi: "Renkli Vermicelli",
-  hindi: "Hindistan Cevizi", fistik: "Yer Fıstığı Parçacıkları", ceviz: "Ceviz Parçacıkları", cakil: "Çakıl Taşı",
-  marsh: "Marshmallow", nesquik: "Nesquik Topları", rulokat: "Rulokat", bonibon: "Bonibon", waffleP: "Waffle Parçacıkları",
-  karamel: "Karamel Sos", sutlu: "Sütlü Sos", beyaz: "Beyaz Sos", antep: "Antep Sos"
+  nutella: "Nutella", muz: "Muz", cilek: "Çilek", lotusB: "Lotus Bisküvi", lotusT: "Lotus Topping", lotusK: "Lotus Krema",
+  oreoT: "Oreo Tozu", oreoBT: "Oreo Bisküvisi Tozu", oreoB: "Oreo Bisküvi", patlak: "Çikolata Patlakları", vermi: "Renkli Vermicelli",
+  vermiP: "Renkli Vermicelli Parçacıkları", hindi: "Hindistan Cevizi", fistik: "Yer Fıstığı Parçacıkları", fistikB: "Yer Fıstığı",
+  ceviz: "Ceviz Parçacıkları", cakil: "Çakıl Taşı Çikolatası", marsh: "Marshmallow", nesquik: "Nesquik Topları", rulokat: "Rulokat",
+  bonibon: "Bonibon", waffleP: "Waffle Parçacıkları", hamur: "Waffle Hamuru",
+  karamel: "Karamel Sos", sutlu: "Sütlü Sos", sutluBeyaz: "Sütlü Beyaz Sos", sutluCik: "Sütlü Çikolata", beyazCik: "Beyaz Çikolata",
+  cikSos: "Çikolata Sosu", sutluCikSos: "Sütlü Çikolata Sosu", beyazCikSos: "Beyaz Çikolata Sosu", antepSos: "Antep Fıstığı Sosu", fistikSos: "Fıstık Sosu",
+  /* Senin Wafflel'ın seçenekleri */
+  c_nutella: "Nutella", c_sutlu: "Sütlü", c_beyaz: "Beyaz", c_bitter: "Bitter", c_framb: "Frambuaz",
+  h_cicek: "Çiçek Klasik", h_iki: "İki Katlı",
+  s_cakil: "Çakıl Taşı", s_bonibon: "Bonibon", s_patlak: "Çikolata Patlakları", s_lotus: "Lotus", s_oreo: "Oreo Parçacıkları",
+  s_ceviz: "Ceviz", s_fistik: "Yer Fıstığı Parçacıkları", s_pasta: "Pasta Süsü", s_hindi: "Hindistan Cevizi",
+  s_marsh: "Marshmallow", s_nesquik: "Nesquik Topları", s_rulokat: "Rulokat",
+  m_muz: "Muz", m_cilek: "Çilek", m_kivi: "Kivi", m_ananas: "Ananas",
+  o_beyaz: "Beyaz", o_sutlu: "Sütlü", o_karamel: "Karamel", o_antep: "Antep", o_cilek: "Çilek", o_framb: "Frambuaz", o_bitter: "Bitter", o_bubble: "Bubble Gum"
 };
-var SAUCES = ["karamel", "sutlu", "beyaz", "antep"];
-var FREE_POOL = ["nutella","muz","cilek","lotusB","lotusT","oreoT","oreoB","patlak","vermi","hindi","fistik","ceviz","cakil","marsh","nesquik","rulokat","bonibon","karamel","sutlu","beyaz","antep"];
 
-var SUMER_BASE = ["nutella","muz","cilek","marsh","oreoT","nesquik","rulokat","vermi","bonibon","cakil","sutlu","beyaz","antep"];
+/* "Senin Wafflel'ın" seçim grupları. max = en fazla seçim, extra = ek ücret (₺). Sınırı ya da ek ücreti buradan değiştirebilirsiniz. */
+function G(id, title, max, keys) {
+  return { id: id, title: title, type: "multi", max: max, items: keys.map(function (k) { return { k: k, extra: 0 }; }) };
+}
+var SENIN_GROUPS = [
+  G("cikolata", "Çikolata", 2, ["c_nutella", "c_sutlu", "c_beyaz", "c_bitter", "c_framb"]),
+  { id: "hamur", title: "Hamur", type: "single", items: [{ k: "h_cicek", extra: 0 }, { k: "h_iki", extra: 200 }] },
+  G("sekerleme", "Şekerleme", 5, ["s_cakil", "s_bonibon", "s_patlak", "s_lotus", "s_oreo", "s_ceviz", "s_fistik", "s_pasta", "s_hindi", "s_marsh", "s_nesquik", "s_rulokat"]),
+  G("meyve", "Meyve", 2, ["m_muz", "m_cilek", "m_kivi", "m_ananas"]),
+  G("sos", "Sos", 2, ["o_beyaz", "o_sutlu", "o_karamel", "o_antep", "o_cilek", "o_framb", "o_bitter", "o_bubble"])
+];
 
+var SUMER_BASE = ["nutella","muz","cilek","marsh","oreoBT","nesquik","rulokat","vermi","bonibon","cakil","sutluCikSos","beyazCikSos","antepSos"];
+
+/* Hazır ürünler: base = menüdeki malzemeler (müşteri istemediğini çıkarabilir) */
 var ITEMS = [
-  { id: "senin", cat: "waffle", name: "Senin Wafflel'ın", price: 350, desc: "Seçeceğin malzemelerle hazırlanır. Aşağıdan istediklerini işaretle.", custom: true, pool: FREE_POOL, base: [] },
-  { id: "lotus", cat: "waffle", name: "Lotus Waffle", price: 375, base: ["nutella","muz","cilek","lotusB","lotusT","karamel"] },
-  { id: "oreo", cat: "waffle", name: "Oreo Waffle", price: 350, base: ["nutella","muz","cilek","oreoT","oreoB","beyaz","sutlu"] },
-  { id: "klasik", cat: "waffle", name: "Klasik Waffle", price: 350, base: ["nutella","muz","cilek","patlak","vermi","hindi","sutlu"] },
-  { id: "salata", cat: "waffle", name: "Waffle Salatası", price: 300, base: ["waffleP","nutella","fistik","ceviz","sutlu"] },
-  { id: "nutellaw", cat: "waffle", name: "Nutella Waffle", price: 325, base: ["nutella","muz","cilek","patlak","cakil","fistik","sutlu","beyaz"] },
-  { id: "sumer", cat: "waffle", name: "Sümer Waffle", price: 450, base: SUMER_BASE },
-  { id: "cift", cat: "waffle", name: "Sümer Çift Katlı Waffle", price: 550, base: SUMER_BASE },
-  { id: "oreocup", cat: "cups", name: "Oreo Cup", price: 250, base: ["waffleP","nutella","muz","cilek","oreoT","oreoB","beyaz","sutlu"] },
-  { id: "wafflecup", cat: "cups", name: "Waffle Cup", price: 250, base: ["waffleP","muz","cilek","beyaz","sutlu","vermi"] },
-  { id: "sumercup", cat: "cups", name: "Sümer Cup", price: 350, base: ["waffleP","muz","cilek","beyaz","sutlu","antep","rulokat","fistik"] }
+  { id: "senin", cat: "waffle", name: "Senin Wafflel'ın", price: 350, desc: "Seçeceğin malzemelerle hazırlanır. Aşağıdan istediklerini işaretle.", custom: true, groups: SENIN_GROUPS },
+  { id: "lotus", cat: "waffle", name: "Lotus Waffle", price: 350, base: ["nutella","muz","cilek","lotusB","lotusK","karamel"] },
+  { id: "klasik", cat: "waffle", name: "Klasik Waffle", price: 250, base: ["nutella","muz","cilek","patlak","vermi","hindi","sutlu"] },
+  { id: "oreo", cat: "waffle", name: "Oreo Waffle", price: 300, base: ["nutella","muz","cilek","oreoT","oreoB","sutluCik"] },
+  { id: "nutellaw", cat: "waffle", name: "Nutella Waffle", price: 300, base: ["nutella","muz","cilek","patlak","cakil","fistik","sutluBeyaz"] },
+  { id: "cift", cat: "waffle", name: "Sümer Çift Katlı Waffle", price: 500, base: SUMER_BASE },
+  { id: "sumer", cat: "waffle", name: "Sümer Waffle", price: 400, base: SUMER_BASE },
+  { id: "salata", cat: "waffle", name: "Waffle Salatası", price: 250, base: ["waffleP","nutella","fistik","ceviz","sutlu"] },
+
+  { id: "oreokova", cat: "kova", name: "Oreo Kova Waffle", price: 350, base: ["hamur","nutella","muz","cilek","oreoT","oreoB","beyazCikSos","sutluCikSos"] },
+  { id: "sumerkova", cat: "kova", name: "Sümer Kova Waffle", price: 450, base: ["hamur","nutella","muz","cilek","marsh","oreoT","nesquik","rulokat","vermi","bonibon","cakil","sutluCikSos","beyazCikSos","fistikSos"] },
+  { id: "lotuskova", cat: "kova", name: "Lotus Kova Waffle", price: 375, base: ["hamur","nutella","muz","cilek","lotusB","lotusT","karamel"] },
+  { id: "nutellakova", cat: "kova", name: "Nutella Kova Waffle", price: 350, base: ["hamur","nutella","muz","cilek","fistikB","patlak","cakil","beyazCikSos","sutluCikSos"] },
+  { id: "klasikkova", cat: "kova", name: "Klasik Kova Waffle", price: 300, base: ["hamur","sutluCik","muz","cilek","patlak","vermi","hindi","sutluCikSos","beyazCikSos"] },
+
+  { id: "sumercup", cat: "cups", name: "Sümer Cup", price: 300, base: ["waffleP","muz","cilek","beyazCik","sutluCik","fistikSos","rulokat","fistik"] },
+  { id: "wafflecup", cat: "cups", name: "Waffle Cup", price: 300, base: ["waffleP","muz","cilek","beyazCik","sutluCik","cikSos","vermiP"] },
+  { id: "oreocup", cat: "cups", name: "Oreo Cup", price: 300, base: ["waffleP","nutella","muz","cilek","oreoT","oreoB","beyazCikSos","sutluCikSos"] }
 ];
 var DRINKS = [
-  ["cola","Coca Cola",100],["fanta","Fanta",100],["sprite","Sprite",100],
-  ["fkarpuz","Fuse Tea Karpuz",100],["fseftali","Fuse Tea Şeftali",100],["flimon","Fuse Tea Limon",100],["fmango","Fuse Tea Mango",100],
-  ["cvisne","Cappy Vişne",75],["cportakal","Cappy Portakal",75],["cseftali","Cappy Şeftali",75],
-  ["soda","Sade Soda",30],["msoda","Meyveli Soda Karpuz-Çilek",45],["su","Su",25]
+  ["sprite","Sprite (250 ml)",100],["fkarpuz","Fuse Tea Karpuz (33 cl)",130],["fseftali","Fuse Tea Şeftali (33 cl)",130],
+  ["fanta","Fanta (33 cl)",100],["cola","Coca-Cola (250 ml)",100],["colazero","Coca-Cola Zero (250 ml)",100],
+  ["soda","Beypazarı Sade Soda (20 cl)",40]
 ];
 
 function tl(n) { return n.toLocaleString("tr-TR") + " ₺"; }
@@ -287,27 +322,35 @@ function names(ids) { return ids.map(function (k) { return ING[k]; }).join(", ")
 function $(s, r) { return (r || document).querySelector(s); }
 function $$(s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); }
 
-var cart = []; /* {key,kind,id,name,unit,qty,selected,removed,custom} */
+var cart = []; /* {key,kind,id,name,unit,qty,sum} */
 
 /* ---- Menü çizimi ---- */
-function chipHTML(id, k, checked) {
-  return '<label class="chip"><input type="checkbox" value="' + k + '"' + (checked ? " checked" : "") + "><span>" + ING[k] + "</span></label>";
+function chipHTML(radioName, k, checked, extra) {
+  return '<label class="chip"><input type="' + (radioName ? "radio" : "checkbox") + '"' + (radioName ? ' name="' + radioName + '"' : "") +
+    ' value="' + k + '" data-extra="' + (extra || 0) + '"' + (checked ? " checked" : "") + "><span>" + ING[k] +
+    (extra ? " <em>+" + tl(extra) + "</em>" : "") + "</span></label>";
 }
 function itemHTML(it) {
-  var pool = it.custom ? it.pool : it.base;
-  var mats = pool.filter(function (k) { return SAUCES.indexOf(k) < 0; });
-  var sauces = pool.filter(function (k) { return SAUCES.indexOf(k) >= 0; });
   var desc = it.custom ? it.desc : names(it.base) + ".";
-  var def = function (k) { return !it.custom; };
   var h = '<article class="item" data-item="' + it.id + '">';
   h += '<div class="row-head"><span class="name">' + it.name + '</span><span class="dots"></span><span class="price">' + tl(it.price) + "</span></div>";
   h += '<p class="desc">' + desc + "</p>";
   h += '<div class="item-actions"><button type="button" class="ghost" data-toggle aria-expanded="false" aria-controls="p-' + it.id + '">' + (it.custom ? "Malzemeleri seç" : "Malzemeleri düzenle") + "</button></div>";
   h += '<div class="panel' + (it.custom ? "" : " fixed") + '" id="p-' + it.id + '" hidden>';
-  h += '<fieldset><legend>Malzemeler</legend><div class="chips">' + mats.map(function (k) { return chipHTML(it.id, k, def(k)); }).join("") + "</div></fieldset>";
-  h += '<fieldset><legend>Soslar</legend><div class="chips">' + sauces.map(function (k) { return chipHTML(it.id, k, def(k)); }).join("") + "</div></fieldset>";
-  h += '<p class="hint">' + (it.custom ? "İstediğin kadar malzeme işaretle." : "İstemediğin malzemenin işaretini kaldır, siparişe \"çıkarılsın\" olarak yazılır.") + "</p>";
-  h += '<p class="err" data-err hidden></p>';
+  if (it.custom) {
+    it.groups.forEach(function (g) {
+      if (g.type === "single") {
+        h += '<fieldset data-group="' + g.id + '" data-type="single" data-title="' + g.title + '"><legend>' + g.title + " · birini seç</legend><div class=\"chips\">" +
+          g.items.map(function (o, i) { return chipHTML("g-" + it.id + "-" + g.id, o.k, i === 0, o.extra); }).join("") + "</div></fieldset>";
+      } else {
+        h += '<fieldset data-group="' + g.id + '" data-max="' + g.max + '" data-title="' + g.title + '"><legend>' + g.title + " · en fazla " + g.max + ' <b data-count>0/' + g.max + "</b></legend><div class=\"chips\">" +
+          g.items.map(function (o) { return chipHTML(null, o.k, false, o.extra); }).join("") + "</div></fieldset>";
+      }
+    });
+  } else {
+    h += '<fieldset data-title="Malzemeler"><legend>Malzemeler</legend><div class="chips">' + it.base.map(function (k) { return chipHTML(null, k, true, 0); }).join("") + "</div></fieldset>";
+  }
+  h += '<p class="hint">' + (it.custom ? "Her grupta sınıra gelince diğer seçenekler kapanır. Yer açmak için bir seçimi kaldır." : "İstemediğin malzemenin işaretini kaldır, siparişe \"çıkarılsın\" olarak yazılır.") + "</p>";
   h += '<div class="add-row"><div class="stepper"><button type="button" data-q="-1" aria-label="Adedi azalt">−</button><output data-qty>1</output><button type="button" data-q="1" aria-label="Adedi artır">+</button></div>';
   h += '<button type="button" class="primary" data-add>Sepete ekle · ' + tl(it.price) + "</button></div>";
   h += "</div></article>";
@@ -318,10 +361,29 @@ function drinkHTML(d) {
     '<div class="stepper"><button type="button" data-dq="-1" aria-label="' + d[1] + ' azalt">−</button><output data-dqty>0</output><button type="button" data-dq="1" aria-label="' + d[1] + ' ekle">+</button></div></div>';
 }
 function renderMenu() {
-  ["waffle", "cups"].forEach(function (c) {
+  ["waffle", "kova", "cups"].forEach(function (c) {
     $("#list-" + c).innerHTML = ITEMS.filter(function (i) { return i.cat === c; }).map(itemHTML).join("");
   });
   $("#list-icecek").innerHTML = DRINKS.map(drinkHTML).join("");
+}
+
+function applyLimits(art) {
+  $$("fieldset[data-max]", art).forEach(function (fs) {
+    var max = +fs.getAttribute("data-max");
+    var boxes = $$("input", fs);
+    var n = boxes.filter(function (b) { return b.checked; }).length;
+    boxes.forEach(function (b) { b.disabled = !b.checked && n >= max; });
+    $("[data-count]", fs).textContent = n + "/" + max;
+    fs.classList.toggle("full", n >= max);
+  });
+}
+function extraOf(panel) {
+  return $$("input:checked", panel).reduce(function (s, i) { return s + (+i.getAttribute("data-extra") || 0); }, 0);
+}
+function refreshAdd(art) {
+  var it = findItem(art.getAttribute("data-item")), panel = $(".panel", art);
+  var q = +$("[data-qty]", panel).textContent;
+  $("[data-add]", panel).textContent = "Sepete ekle · " + tl((it.price + extraOf(panel)) * q);
 }
 
 /* ---- Sepet ---- */
@@ -329,11 +391,7 @@ function findItem(id) { return ITEMS.filter(function (i) { return i.id === id; }
 function total() { return cart.reduce(function (s, l) { return s + l.unit * l.qty; }, 0); }
 function count() { return cart.reduce(function (s, l) { return s + l.qty; }, 0); }
 
-function lineSummary(l) {
-  if (l.kind === "drink") return "";
-  if (l.custom) return "Malzemeler: " + names(l.selected);
-  return l.removed.length ? "Çıkarılan: " + names(l.removed) : "Menüdeki gibi";
-}
+function lineSummary(l) { return l.kind === "drink" ? "" : (l.sum || ""); }
 function renderCart() {
   var box = $("#cart");
   if (!cart.length) {
@@ -431,23 +489,40 @@ document.addEventListener("click", function (e) {
     if (t.hasAttribute("data-q")) {
       var out = $("[data-qty]", panel), q = Math.max(1, Math.min(20, +out.textContent + +t.getAttribute("data-q")));
       out.textContent = q;
-      $("[data-add]", panel).textContent = "Sepete ekle · " + tl(it.price * q);
+      refreshAdd(art);
       return;
     }
     if (t.hasAttribute("data-add")) {
-      var sel = $$("input:checked", panel).map(function (i) { return i.value; });
-      var err = $("[data-err]", panel);
-      if (it.custom && !sel.length) { err.textContent = "En az bir malzeme işaretle."; err.hidden = false; return; }
-      err.hidden = true;
       var qty = +$("[data-qty]", panel).textContent;
-      var removed = it.custom ? [] : it.base.filter(function (k) { return sel.indexOf(k) < 0; });
-      var key = "w|" + it.id + "|" + sel.slice().sort().join(",");
-      addLine({ key: key, kind: "item", id: it.id, name: it.name, unit: it.price, qty: qty, selected: sel, removed: removed, custom: !!it.custom });
+      var line;
+      if (it.custom) {
+        var parts = [], sel = [], extra = 0;
+        $$("fieldset[data-group]", panel).forEach(function (fs) {
+          var ch = $$("input:checked", fs);
+          if (!ch.length) return;
+          var labels = ch.map(function (i) {
+            var ex = +i.getAttribute("data-extra") || 0;
+            extra += ex; sel.push(i.value);
+            return ING[i.value] + (ex ? " (+" + tl(ex) + ")" : "");
+          });
+          parts.push(fs.getAttribute("data-title") + ": " + labels.join(", "));
+        });
+        line = { key: "w|" + it.id + "|" + sel.slice().sort().join(","), kind: "item", id: it.id, name: it.name, unit: it.price + extra, qty: qty, sum: parts.join(" | ") };
+      } else {
+        var kept = $$("input:checked", panel).map(function (i) { return i.value; });
+        var removed = it.base.filter(function (k) { return kept.indexOf(k) < 0; });
+        line = { key: "w|" + it.id + "|" + removed.join(","), kind: "item", id: it.id, name: it.name, unit: it.price, qty: qty, sum: removed.length ? "Çıkarılan: " + names(removed) : "Menüdeki gibi" };
+      }
+      addLine(line);
       toast(it.name + " sepete eklendi");
       /* paneli başlangıca döndür */
-      $$("input", panel).forEach(function (i) { i.checked = !it.custom; });
+      $$("fieldset", panel).forEach(function (fs) {
+        var single = fs.getAttribute("data-type") === "single";
+        $$("input", fs).forEach(function (i, idx) { i.checked = it.custom ? (single && idx === 0) : true; });
+      });
+      if (it.custom) applyLimits(art);
       $("[data-qty]", panel).textContent = "1";
-      $("[data-add]", panel).textContent = "Sepete ekle · " + tl(it.price);
+      refreshAdd(art);
       panel.hidden = true;
       $("[data-toggle]", art).setAttribute("aria-expanded", "false");
       return;
@@ -511,10 +586,18 @@ document.addEventListener("click", function (e) {
 document.addEventListener("input", function (e) {
   if (e.target.closest("#order-form")) updateSend();
 });
-$("#order-form").addEventListener("submit", function (e) { e.preventDefault(); });
+document.addEventListener("change", function (e) {
+  var inp = e.target;
+  if (inp.type !== "checkbox" && inp.type !== "radio") return;
+  var art = inp.closest(".item");
+  if (!art) return;
+  if (findItem(art.getAttribute("data-item")).custom) applyLimits(art);
+  refreshAdd(art);
+});
+$("#order-form").addEventListener("submit",function (e) { e.preventDefault(); });
 
 /* Aktif sekme */
-var secs = ["waffle", "cups", "icecek", "sepet"];
+var secs = ["waffle", "kova", "cups", "icecek", "sepet"];
 function markTab() {
   var cur = secs[0];
   secs.forEach(function (id) {
